@@ -3,39 +3,65 @@ import random
 cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
 
-def black_jack():
-    user_cards = [11, 11]
-    computer_cards = [random.choice(cards), random.choice(cards)]
-    sum_user = sum(user_cards)
-    sum_comp = sum(computer_cards)
-    print(user_cards)
-    print(computer_cards)
-    print(sum_user)
-    print(sum_comp)
-    print(computer_cards[0])
-
-    if sum_comp == 21:
-        print("Computer wins")
-    elif sum_comp > 21:
-        print("Computer loses")
-    if sum_user == 21:
-        print("You win")
-    elif sum_user > 21:
-        print("You lose")
-        if 11 in user_cards:
-            user_cards[user_cards.index(11)] = 1
-            if sum(user_cards) > 21:
-                add_card = input("Do you want to get another card? y/n")
-                if add_card == "y":
-                    decision = True
-                    user_cards.append(random.choice(cards))
-                    print(user_cards)
-                if add_card == "n":
-                    decision = False
-            else:
-                print("You lose")
-    if sum_user == 21 and sum_comp == 21:
-        print("It's a draw")
+def random_card():
+    return random.choice(cards)
 
 
-black_jack()
+user_cards = [random_card(), random_card()]
+computer_cards = [random_card(), random_card()]
+
+
+def calculate_score(deck):
+    score = sum(deck)
+    if 11 in deck and 10 in deck and score == 21:
+        return 0
+    if score > 21:
+        if 11 in deck:
+            deck.remove(11)
+            deck.append(1)
+    return score
+
+
+computer_score = calculate_score(computer_cards)
+user_score = calculate_score(user_cards)
+
+game_state = False
+
+while not game_state:
+    print(f"Your cards are {user_cards}, current score is {user_score}")
+    print(f"Dealer's first card is {computer_cards[0]}")
+
+    if user_score == 0 or computer_score == 0 or user_score > 21:
+        game_state = True
+    else:
+        decision = input("Would you get another card? y/n \n")
+        if decision == "y":
+            user_cards.append(random_card())
+            user_score = calculate_score(user_cards)
+        elif decision == "n":
+            game_state = True
+
+while computer_score != 0 and computer_score < 17:
+    computer_cards.append(random_card())
+    computer_score = calculate_score(computer_cards)
+
+
+def compare():
+    if user_score == computer_score:
+        return "draw"
+    elif computer_score == 0:
+        return "you lose"
+    elif user_score == 0:
+        return "you win"
+    elif user_score > 21:
+        return "you lose"
+    elif computer_score > 21:
+        return "you win"
+    elif user_score > computer_score:
+        return "you win"
+    elif computer_score > user_score:
+        return "you lose"
+
+
+print(compare())
+print(computer_cards)
